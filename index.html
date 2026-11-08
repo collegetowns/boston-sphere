@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Boston Sphere</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Graduate&family=Barlow+Condensed:wght@500;600;700&family=Playfair+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: Onion-style front page. Masthead row, newswire ticker, then
+   lead headline | lead cartoon | "Also This Week" rail, with Last Week below. */
+:root {
+  --navy: #0b2a5b;        /* ink, outlines, headlines */
+  --blue: #1f5fbf;        /* brand accent */
+  --sky: #dce8f8;         /* tints, cartoon sky */
+  --rule: #c9d4e5;        /* hairlines */
+  --paper: #ffffff;
+  --muted: #4d5f7c;
+  --display: "Graduate", "Rockwell", "Courier New", serif;
+  --label: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --headline: "Playfair Display", Georgia, "Times New Roman", serif;
+  --body: "Source Serif 4", Georgia, serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; background: var(--paper); color: var(--navy); }
+body { font-family: var(--body); }
+a { color: inherit; text-decoration: none; }
+a:hover .hl, a:focus-visible .hl { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+a:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+
+/* Masthead */
+.mast { display: grid; grid-template-columns: minmax(170px, 1fr) auto minmax(170px, 1fr); align-items: end; gap: 24px; padding: 28px 0 18px; border-bottom: 1px solid var(--rule); }
+.mast .left, .mast .right { font-family: var(--label); font-weight: 600; font-size: 18px; }
+.mast .right { text-align: right; }
+.mast .left small, .mast .right small { display: block; font-weight: 500; color: var(--muted); font-size: 15px; }
+.brand { text-align: center; }
+.brand h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(34px, 5.2vw, 66px); line-height: .95; letter-spacing: .02em; color: var(--navy); display: flex; align-items: center; justify-content: center; gap: .18em; }
+.brand h1 .globe { width: 1.05em; height: 1.05em; flex: none; }
+.brand .tag { font-family: var(--headline); font-style: italic; font-weight: 700; color: var(--blue); font-size: 18px; margin-top: 8px; }
+
+nav.sections { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 26px; padding: 12px 0 6px; font-family: var(--label); font-weight: 600; font-size: 19px; }
+nav.sections a:hover, nav.campus a:hover { color: var(--blue); }
+nav.campus { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: 4px 20px; padding: 8px 0; border-bottom: 3px double var(--navy); font-family: var(--label); font-weight: 500; font-size: 16px; color: var(--muted); }
+nav.campus span { font-family: var(--display); font-size: 13px; letter-spacing: .08em; color: var(--blue); text-transform: uppercase; }
+
+/* Newswire */
+.wire { display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--rule); padding: 10px 0; overflow: hidden; }
+.wire .tagpill { flex: none; background: var(--blue); color: #fff; font-family: var(--label); font-weight: 700; font-size: 16px; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 3px; }
+.wire .lane { flex: 1; min-width: 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); }
+.wire .track { width: max-content; display: flex; gap: 32px; white-space: nowrap; font-family: var(--label); font-weight: 500; font-size: 18px; animation: scroll 60s linear infinite; }
+.wire .track span::after { content: "|"; color: var(--rule); margin-left: 32px; }
+@keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .wire .track { animation: none; } }
+
+/* Front */
+.front { display: grid; grid-template-columns: minmax(300px, 1.15fr) minmax(0, 1.85fr) minmax(240px, 1fr); gap: 32px; padding: 32px 0; border-bottom: 1px solid var(--rule); }
+.kicker { font-family: var(--label); font-weight: 700; font-size: 18px; color: var(--blue); text-transform: none; margin: 0 0 10px; }
+.lead .hl { font-family: var(--headline); font-weight: 800; font-size: clamp(32px, 3.2vw, 46px); line-height: 1.04; margin: 0; text-wrap: balance; }
+.lead .dek { font-size: 17px; line-height: 1.5; color: var(--muted); margin: 18px 0 0; max-width: 38ch; }
+.thread-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-family: var(--label); font-weight: 700; font-size: 18px; color: var(--navy); }
+.thread-link .dot { width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font-size: 15px; }
+.meta { font-family: var(--label); font-weight: 500; font-size: 15px; color: var(--muted); margin-top: 14px; font-variant-numeric: tabular-nums; }
+
+.art { display: block; border: 1px solid var(--rule); background: var(--sky); }
+.art svg { display: block; width: 100%; height: auto; }
+
+.rail h2 { display: inline-block; margin: 0 0 6px; background: var(--navy); color: #fff; font-family: var(--display); font-weight: 400; font-size: 20px; letter-spacing: .04em; padding: 8px 14px; border-radius: 3px; }
+.rail ol { list-style: none; margin: 0; padding: 0; }
+.rail li { border-bottom: 1px solid var(--rule); }
+.rail li a { display: block; padding: 18px 0; }
+.rail .kicker { font-size: 16px; margin-bottom: 6px; }
+.rail .hl { font-family: var(--headline); font-weight: 700; font-size: 22px; line-height: 1.18; margin: 0; text-wrap: balance; }
+.rail .meta { margin-top: 8px; font-size: 14px; }
+
+/* Last week */
+.lastweek { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: center; padding: 28px 0; border-bottom: 3px double var(--navy); }
+.lastweek .art { max-width: 220px; }
+.lastweek .label { font-family: var(--display); font-size: 16px; letter-spacing: .06em; color: var(--blue); margin: 0 0 8px; }
+.lastweek .hl { font-family: var(--headline); font-weight: 700; font-size: clamp(24px, 2.4vw, 32px); line-height: 1.12; margin: 0; text-wrap: balance; }
+
+footer { padding: 22px 0 40px; font-family: var(--label); font-size: 15px; color: var(--muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+footer { flex-direction: column; }
+footer .disclaimer { max-width: 80ch; }
+footer strong { font-family: var(--display); font-weight: 400; color: var(--navy); letter-spacing: .03em; }
+.preview-note { background: var(--sky); border-left: 4px solid var(--blue); padding: 10px 14px; font-family: var(--label); font-size: 16px; margin: 18px 0 0; }
+
+
+.mast .right .powered { color: var(--blue); }
+.mast .right .powered:hover, footer a:hover { text-decoration: underline; }
+footer a { color: var(--navy); font-weight: 600; }
+.editions { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); font-family: var(--label); font-weight: 600; font-size: 17px; }
+.editions .weeks { flex: 1; display: flex; gap: 8px; overflow-x: auto; justify-content: center; }
+.editions .weeks a { white-space: nowrap; padding: 4px 12px; border: 1px solid var(--rule); border-radius: 999px; color: var(--muted); }
+.editions .weeks a:hover { border-color: var(--blue); color: var(--blue); }
+.editions .weeks a[aria-current="page"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+.editions .step { color: var(--blue); white-space: nowrap; }
+.editions .step[aria-disabled="true"] { color: var(--rule); pointer-events: none; }
+@media (max-width: 560px) { .editions { flex-wrap: wrap; justify-content: space-between; } .editions .weeks { order: 3; flex-basis: 100%; justify-content: flex-start; } }
+/* Parody ads */
+.ad { margin: 28px 0 0; border: 3px solid var(--navy); background: var(--sky); padding: 14px 20px 18px; text-align: center; }
+.ad.coupon { border-style: dashed; background: var(--paper); }
+#ad2 { margin-bottom: 24px; }
+.ad .ad-label { margin: 0 0 6px; font-family: var(--label); font-weight: 600; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.ad .ad-name { margin: 0; font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1.1; letter-spacing: .02em; color: var(--navy); }
+.ad .ad-tag { margin: 6px 0 10px; font-family: var(--headline); font-style: italic; font-weight: 700; font-size: 18px; line-height: 1.25; color: var(--blue); }
+.ad .ad-body { margin: 0 auto 14px; max-width: 46ch; font-size: 15px; line-height: 1.45; color: var(--navy); }
+.ad .ad-cta { display: inline-block; background: #e8c34a; border: 2px solid var(--navy); border-radius: 999px; padding: 4px 16px; font-family: var(--label); font-weight: 700; font-size: 16px; color: var(--navy); }
+.campus-list { display: contents; }
+@media (min-width: 981px) {
+  main { display: grid; grid-template-columns: minmax(300px, 1.15fr) minmax(0, 1.85fr) minmax(240px, 1fr); grid-template-rows: auto auto 1fr; column-gap: 32px; padding: 32px 0; border-bottom: 3px double var(--navy); }
+  .front { display: contents; }
+  .col-left { grid-column: 1; grid-row: 1 / -1; }
+  .art-col { grid-column: 2; grid-row: 1; }
+  .rail { grid-column: 3; grid-row: 1 / -1; }
+  #ad2 { grid-column: 2; grid-row: 3; align-self: stretch; margin-bottom: 0; }
+  .col-left { display: flex; flex-direction: column; }
+  #ad1 { flex: 1; }
+  .ad { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .lastweek { grid-column: 2; grid-row: 2; align-self: start; grid-template-columns: 180px 1fr; margin-top: 24px; padding: 22px 0 0; border-top: 1px solid var(--rule); border-bottom: 0; }
+  .lastweek .art { max-width: 180px; }
+  .lastweek .hl { font-size: 24px; }
+}
+@media (max-width: 980px) {
+  .front { grid-template-columns: 1fr; }
+  .art-col { order: -1; }
+  .mast { grid-template-columns: 1fr; text-align: center; }
+  .mast .left, .mast .right { text-align: center; }
+}
+@media (max-width: 560px) {
+  .lastweek { grid-template-columns: 1fr; }
+  .wrap { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="left"><span id="dateline">Friday, November 6, 2026</span><small id="weather">Weather: Cold</small></div>
+    <div class="brand">
+      <h1>
+        <span>THE BOSTON</span>
+        <svg class="globe" viewBox="0 0 100 100" aria-hidden="true">
+          <defs><clipPath id="diamond"><polygon points="50,2 98,50 50,98 2,50"/></clipPath></defs>
+          <g clip-path="url(#diamond)">
+            <rect width="100" height="100" fill="#cfe2f3"/>
+            <g fill="none" stroke="#6f93b8" stroke-width=".9"><path d="M22 0 Q9.4 50 22 100"/><path d="M36 0 Q29.7 50 36 100"/><path d="M50 0 Q50.0 50 50 100"/><path d="M64 0 Q70.3 50 64 100"/><path d="M78 0 Q90.6 50 78 100"/><path d="M0 18 Q50 21 100 18"/><path d="M0 32 Q50 35 100 32"/><path d="M0 70 Q50 73 100 70"/><path d="M0 84 Q50 87 100 84"/></g>
+            <path d="M0 53 Q50 56 100 53" fill="none" stroke="#0b2a5b" stroke-width="1.4" stroke-dasharray="3 2"/>
+            <path d="M30 22 C36 17 44 14 52 13 C58 12 64 14 68 18 C72 21 75 25 76 29 C71 31 68 34 66 37 L67.5 41 L65 39 C62 40 60 42 59 44 L57 44 C53 42 49 39 45 35 C41 32 37 29 34 27 C32 26 31 24 30 22 Z" fill="#8fb3e0" stroke="#0b2a5b" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M57 44 C57.5 46 56.5 48 57.5 50.5 L59 50 C58.5 48 59.5 46 59 44 Z" fill="#8fb3e0" stroke="#0b2a5b" stroke-width="1" stroke-linejoin="round"/>
+            <path d="M57.5 50.5 C63 47.5 71 49 76 55 C79 59 77 64 73 68 C70 73 67 78 64 83 L62 86 C60 79 58 72 57 66 C56 59 54.5 54 57.5 50.5 Z" fill="#5f8fd0" stroke="#0b2a5b" stroke-width="1.2" stroke-linejoin="round"/>
+            <g fill="#8fb3e0" stroke="#0b2a5b" stroke-width=".7"><ellipse cx="66" cy="43.5" rx="2.4" ry="1"/><ellipse cx="70" cy="45" rx="1.4" ry=".8"/></g>
+          </g>
+          <polygon points="50,2 98,50 50,98 2,50" fill="none" stroke="#0b2a5b" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+        <span>SPHERE</span>
+      </h1>
+      <div class="tag">Covering News From Every Angle</div>
+    </div>
+    <div class="right"><a class="powered" href="https://collegetowns.org">A Parody Site Powered by College Towns</a><small>New edition every Friday night</small></div>
+  </header>
+
+  <nav class="sections" aria-label="Sections">
+    <a href="https://www.reddit.com/r/boston/">News</a>
+    <a href="https://www.reddit.com/r/boston/">Local</a>
+    <a href="https://www.reddit.com/r/mbta/">The T</a>
+    <a href="https://www.reddit.com/r/CambridgeMA/">Cambridge</a>
+    <a href="https://www.reddit.com/r/somerville/">Somerville</a>
+    <a href="https://www.reddit.com/r/bostonsports/">Sports</a>
+    <a href="https://www.reddit.com/r/massachusetts/">Mass.</a>
+  </nav>
+  <nav class="campus" aria-label="Campus subreddits">
+    <span>Campus</span>
+    <div class="campus-list" id="campus">
+      <a href="https://www.reddit.com/r/BostonU/">BU</a>
+      <a href="https://www.reddit.com/r/NEU/">Northeastern</a>
+      <a href="https://www.reddit.com/r/Harvard/">Harvard</a>
+      <a href="https://www.reddit.com/r/mit/">MIT</a>
+      <a href="https://www.reddit.com/r/BostonCollege/">BC</a>
+      <a href="https://www.reddit.com/r/Tufts/">Tufts</a>
+      <a href="https://www.reddit.com/r/EmersonCollege/">Emerson</a>
+      <a href="https://www.reddit.com/r/Berklee/">Berklee</a>
+    </div>
+  </nav>
+
+  <div class="wire" aria-label="Newswire">
+    <span class="tagpill">Newswire</span>
+    <div class="lane"><div class="track" id="wire"></div></div>
+  </div>
+
+  <div class="editions" aria-label="Editions">
+    <a class="step" id="prev" href="#">‹ Previous week</a>
+    <div class="weeks" id="weeks"></div>
+    <a class="step" id="next" href="#">Next week ›</a>
+  </div>
+
+  <main>
+    <section class="front">
+      <div class="col-left">
+        <article class="lead" id="lead"></article>
+        <aside class="ad" id="ad1" aria-label="Parody advertisement" hidden></aside>
+      </div>
+      <div class="art-col"><a class="art" id="lead-art" aria-label="Open the r/Boston thread"></a></div>
+      <aside class="rail">
+        <h2>ALSO THIS WEEK</h2>
+        <ol id="rail"></ol>
+      </aside>
+    </section>
+
+    <section class="lastweek" id="lastweek" aria-label="Last week's top story"></section>
+    <aside class="ad coupon" id="ad2" aria-label="Parody advertisement" hidden></aside>
+  </main>
+
+  <p class="preview-note" id="note"></p>
+
+  <footer>
+    <span class="disclaimer"><strong>THE BOSTON SPHERE</strong> is a parody. The headlines are jokes generated by artificial intelligence and not real news. Each story links to related discussion on Reddit. The Boston Sphere is not affiliated with, endorsed by, or connected to The Boston Globe, its newsletters, Reddit, or r/Boston.</span>
+    <span><a href="https://collegetowns.org">A Parody Site Powered by College Towns</a></span>
+  </footer>
+</div>
+
+<!-- Cartoons: one simple SVG per story, keyed by id. -->
+<template id="cartoon-lead">
+<svg viewBox="0 0 800 500" role="img" aria-label="Cartoon: Wellesley residents guarding an empty parking lot with velvet ropes and a bag of money">
+  <rect width="800" height="500" fill="#dce8f8"/>
+  <g fill="#fff" stroke="#0b2a5b" stroke-width="4">
+    <path d="M90 90 q20 -30 50 -10 q25 -25 50 5 q30 0 25 25 h-140 q-15 -20 15 -20z"/>
+    <path d="M560 70 q20 -30 50 -10 q25 -25 50 5 q30 0 25 25 h-140 q-15 -20 15 -20z"/>
+  </g>
+  <!-- distant trees -->
+  <g stroke="#0b2a5b" stroke-width="4" fill="#7fa6dc">
+    <circle cx="60" cy="230" r="45"/><circle cx="140" cy="215" r="55"/><circle cx="700" cy="220" r="55"/><circle cx="770" cy="235" r="40"/>
+  </g>
+  <!-- parking lot -->
+  <path d="M0 260 H800 V500 H0z" fill="#b8c2d1" stroke="#0b2a5b" stroke-width="4"/>
+  <g stroke="#fff" stroke-width="7" stroke-linecap="round">
+    <line x1="200" y1="290" x2="170" y2="420"/><line x1="320" y1="290" x2="310" y2="420"/>
+    <line x1="440" y1="290" x2="450" y2="420"/><line x1="560" y1="290" x2="590" y2="420"/>
+  </g>
+  <!-- velvet rope -->
+  <g stroke="#0b2a5b" stroke-width="4">
+    <rect x="152" y="300" width="12" height="130" fill="#e8c34a"/><rect x="636" y="300" width="12" height="130" fill="#e8c34a"/>
+    <circle cx="158" cy="298" r="12" fill="#e8c34a"/><circle cx="642" cy="298" r="12" fill="#e8c34a"/>
+  </g>
+  <path d="M164 305 Q400 380 636 305" fill="none" stroke="#c0283c" stroke-width="12" stroke-linecap="round"/>
+  <!-- plaque -->
+  <g stroke="#0b2a5b" stroke-width="4">
+    <rect x="300" y="160" width="200" height="80" rx="6" fill="#e8c34a"/>
+    <line x1="400" y1="240" x2="400" y2="300"/>
+  </g>
+  <text x="400" y="192" text-anchor="middle" font-family="Graduate, serif" font-size="17" fill="#0b2a5b">HISTORIC</text>
+  <text x="400" y="220" text-anchor="middle" font-family="Graduate, serif" font-size="17" fill="#0b2a5b">NOTHING</text>
+  <!-- resident 1: sweater vest, protest sign -->
+  <g stroke="#0b2a5b" stroke-width="4" stroke-linecap="round">
+    <line x1="150" y1="262" x2="150" y2="400"/>
+    <rect x="40" y="200" width="140" height="62" fill="#fff"/>
+    <rect x="80" y="370" width="50" height="70" rx="10" fill="#1f5fbf"/>
+    <circle cx="105" cy="345" r="26" fill="#f4d3b5"/>
+    <path d="M80 335 q25 -30 50 0" fill="#e8c34a"/>
+    <circle cx="96" cy="345" r="3" fill="#0b2a5b"/><circle cx="114" cy="345" r="3" fill="#0b2a5b"/>
+    <path d="M96 358 q9 -6 18 0" fill="none"/>
+    <line x1="105" y1="440" x2="95" y2="480"/><line x1="115" y1="440" x2="125" y2="480"/>
+    <line x1="130" y1="395" x2="150" y2="392"/>
+  </g>
+  <text x="110" y="228" text-anchor="middle" font-family="Graduate, serif" font-size="15" fill="#c0283c">SAVE OUR</text>
+  <text x="110" y="250" text-anchor="middle" font-family="Graduate, serif" font-size="15" fill="#c0283c">ASPHALT</text>
+  <!-- resident 2: hugging money bag -->
+  <g stroke="#0b2a5b" stroke-width="4" stroke-linecap="round">
+    <path d="M640 470 q-50 0 -50 -50 q0 -40 50 -60 q50 20 50 60 q0 50 -50 50z" fill="#9fc37d"/>
+    <path d="M622 362 l18 -20 l18 20" fill="#9fc37d"/>
+    <rect x="690" y="370" width="50" height="75" rx="10" fill="#fff"/>
+    <circle cx="715" cy="342" r="26" fill="#f4d3b5"/>
+    <path d="M690 330 q25 -28 50 0" fill="#7a4a2a"/>
+    <circle cx="706" cy="342" r="3" fill="#0b2a5b"/><circle cx="724" cy="342" r="3" fill="#0b2a5b"/>
+    <path d="M706 356 q9 6 18 0" fill="none"/>
+    <path d="M692 395 q-20 10 -12 30"/>
+    <line x1="708" y1="445" x2="700" y2="482"/><line x1="722" y1="445" x2="732" y2="482"/>
+  </g>
+  <text x="640" y="430" text-anchor="middle" font-family="Graduate, serif" font-size="22" fill="#0b2a5b">$900K</text>
+</svg>
+</template>
+
+<template id="cartoon-lastweek">
+<svg viewBox="0 0 400 300" role="img" aria-label="Cartoon: a smiling lasagna wearing a 'Not Poisoned' ribbon">
+  <rect width="400" height="300" fill="#dce8f8"/>
+  <g stroke="#0b2a5b" stroke-width="4" stroke-linejoin="round">
+    <path d="M70 140 h260 l-20 110 h-220z" fill="#fff"/>
+    <rect x="85" y="110" width="230" height="45" rx="6" fill="#e2783a"/>
+    <path d="M85 125 q30 -20 60 0 q30 -20 60 0 q30 -20 60 0 q25 -15 50 0" fill="#f2d26b"/>
+    <rect x="40" y="150" width="35" height="20" rx="8" fill="#fff"/>
+    <rect x="325" y="150" width="35" height="20" rx="8" fill="#fff"/>
+  </g>
+  <circle cx="170" cy="195" r="6" fill="#0b2a5b"/><circle cx="230" cy="195" r="6" fill="#0b2a5b"/>
+  <path d="M175 215 q25 22 50 0" fill="none" stroke="#0b2a5b" stroke-width="4" stroke-linecap="round"/>
+  <g stroke="#0b2a5b" stroke-width="3">
+    <path d="M110 30 h180 l-12 20 l12 20 h-180 l12 -20z" fill="#1f5fbf"/>
+  </g>
+  <text x="200" y="58" text-anchor="middle" font-family="Graduate, serif" font-size="17" fill="#fff">NOT POISONED</text>
+</svg>
+</template>
+
+<!-- Editions, newest first. Each Friday night the update adds a new edition at the top.
+     "Last week's top story" is always the lead of the edition right after it. -->
+<script type="application/json" id="editions">
+[
+  {
+    "id": "week-2026-11-06",
+    "date": "Friday, November 6, 2026",
+    "label": "Nov 6",
+    "weather": "Cold",
+    "preview": false,
+    "lead": {
+      "kicker": "Local",
+      "headline": "Wellesley Spends $900,000 Defending Parking Lot's Sacred Right To Stay Empty",
+      "dek": "Residents vowed to protect the lot's 47-year tradition of having nothing on it, citing its historic character and the very real risk of neighbors.",
+      "source": "Wellesley votes $900,000 to fight state plan to convert a community college parking lot to housing",
+      "url": "https://www.reddit.com/r/boston/search/?q=Wellesley%20parking%20lot%20housing&restrict_sr=1&sort=new",
+      "subreddit": "r/boston",
+      "art": "cartoon-lead"
+    },
+    "others": [
+      {
+        "kicker": "The T",
+        "headline": "Orange Line Hits 55 MPH Near North Station, Riders Brace For Unfamiliar Sensation Of Arriving",
+        "source": "MBTA increasing speeds on parts of Orange Line after track improvements",
+        "url": "https://www.reddit.com/r/mbta/search/?q=Orange%20Line%2055%20mph&restrict_sr=1&sort=new",
+        "subreddit": "r/mbta"
+      },
+      {
+        "kicker": "Campus",
+        "headline": "Renovated GSU Food Hall Unveils Two New Eateries, Same Line Stretching Back To 2019",
+        "source": "George Sherman Union Food Hall renovation adds new eateries this fall",
+        "url": "https://www.reddit.com/r/BostonU/search/?q=GSU%20food%20hall&restrict_sr=1&sort=new",
+        "subreddit": "r/BostonU"
+      },
+      {
+        "kicker": "Mass.",
+        "headline": "Salem Sweeps Up After Halloween, Mostly Using Leftover Broomsticks",
+        "source": "Salem Halloween 2026 guide: events, drone show, parking and trains",
+        "url": "https://www.reddit.com/r/massachusetts/search/?q=Salem%20Halloween&restrict_sr=1&sort=new",
+        "subreddit": "r/massachusetts"
+      },
+      {
+        "kicker": "World",
+        "headline": "British Otters Win Zoo Vote, Call New Heated Pool 'Otterly Deserved'",
+        "source": "Asian small-clawed otters win Vote Wild, earning £5,000 for a warm indoor pool",
+        "url": "https://www.reddit.com/r/worldnews/search/?q=otters%20zoo%20vote&restrict_sr=1&sort=new",
+        "subreddit": "r/worldnews"
+      }
+    ],
+    "newswire": [
+      "Space Saver Season Opens Early, Lawn Chairs Report For Duty",
+      "Area Dad Insists Green Line Is Just Taking The Scenic Route",
+      "Lobster Roll Prices Leave Diners Feeling A Little Shellfish",
+      "Foliage Season Ends As Trees Turn Over A New Leaf",
+      "Kendall Square Startup Pivots Twice Before Lunch",
+      "Mass Pike Tolls Really Starting To Take Their Toll, Says Local Dad"
+    ],
+    "ads": [
+      {
+        "name": "Round & Round Wraps",
+        "tagline": "The only rotary you'll actually want to go around twice.",
+        "body": "Every wrap is rolled in a perfect circle, so you never know where it starts, where it ends, or who has the right of way. Now with extra yield.",
+        "cta": "Merge Into Savings"
+      },
+      {
+        "name": "Unbe-leaf-able Rakes",
+        "tagline": "Fall for us before your lawn falls for leaves.",
+        "body": "Our handcrafted rakes make yard work a breeze, especially on windy days. Don't let chores pile up. Leaf it to us!",
+        "cta": "Rake In The Deals"
+      }
+    ]
+  },
+  {
+    "id": "week-2026-10-30",
+    "date": "Friday, October 30, 2026",
+    "label": "Oct 30",
+    "weather": "Nice",
+    "preview": true,
+    "lead": {
+      "kicker": "Local",
+      "headline": "Board Game Night Attendees Relieved Lasagna From Internet Stranger Contained Only Lasagna",
+      "dek": "Sources confirm the casserole, obtained through r/Boston, was delicious, layered, and free of any surprises beyond extra ricotta.",
+      "source": "Happy to confirm the Reddit Lasagna was a nonpoisoned hit at board game night!",
+      "url": "https://www.reddit.com/r/boston/search/?q=Reddit%20Lasagna%20nonpoisoned&restrict_sr=1",
+      "subreddit": "r/boston",
+      "art": "cartoon-lastweek"
+    },
+    "others": [
+      {
+        "kicker": "Skyline",
+        "headline": "Tourist Atop Prudential Asks Locals To Name One Building, Receives 400 Confident, Different Answers",
+        "source": "I'm at the top of the Prudential. What is the building with the vertical lights to the right of the Hancock Tower?",
+        "url": "https://www.reddit.com/r/boston/search/?q=top%20of%20the%20Prudential%20vertical%20lights&restrict_sr=1",
+        "subreddit": "r/boston"
+      },
+      {
+        "kicker": "Business",
+        "headline": "Brookline GameStop Closure Leaves Area 30-Year-Olds With Nowhere To Stand Around On Saturdays",
+        "source": "They're shutting down the GameStop in Brookline :(",
+        "url": "https://www.reddit.com/r/boston/search/?q=GameStop%20Brookline&restrict_sr=1",
+        "subreddit": "r/boston"
+      },
+      {
+        "kicker": "Culture",
+        "headline": "New Englander Clarifies He Wasn't Being Rude, He Was Just Helping You Efficiently And Without Eye Contact",
+        "source": "New England \"Rudeness\"",
+        "url": "https://www.reddit.com/r/boston/search/?q=New%20England%20Rudeness&restrict_sr=1",
+        "subreddit": "r/boston"
+      },
+      {
+        "kicker": "World",
+        "headline": "British Grower's 2,856-Pound Pumpkin Breaks World Record, Calls It A Gourd Day's Work",
+        "source": "British man's 2,856.8-pound pumpkin breaks world record",
+        "url": "https://www.reddit.com/r/worldnews/search/?q=pumpkin%20world%20record&restrict_sr=1&sort=new",
+        "subreddit": "r/worldnews"
+      }
+    ],
+    "newswire": [
+      "Fall Foliage Peaks For Exactly 40 Minutes",
+      "Salem Hits Capacity By 9 A.M.",
+      "Area Man Already Complaining About Snow That Hasn't Fallen",
+      "Sox Fan Begins Annual 'Next Year' Speech Early",
+      "Mass Pike Construction Cone Celebrates 20th Anniversary"
+    ],
+    "ads": [
+      {
+        "name": "Chowdah Champ Bibs",
+        "tagline": "For when your soup gets souper serious.",
+        "body": "Extra-wide coverage for clam-tastrophes of every size. Machine washable, oyster-cracker resistant, and certified totally un-shellfish.",
+        "cta": "Bib Your Best"
+      },
+      {
+        "name": "Snail Line Express",
+        "tagline": "Why wait for the train when you could wait for a snail?",
+        "body": "Our garden-fresh couriers deliver your letters in 5 to 7 business stops. Delays are not a bug, they're a slug.",
+        "cta": "Shell Out Less"
+      }
+    ]
+  }
+]
+</script>
+
+<script>
+(function () {
+  const editions = JSON.parse(document.getElementById('editions').textContent);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const art = id => { const t = document.getElementById(id); return t ? t.innerHTML : ''; };
+  const $ = id => document.getElementById(id);
+
+  const sub = s => 'https://www.reddit.com/r/' + s + '/';
+  const find = q => 'https://www.reddit.com/search/?q=' + encodeURIComponent('"' + q + '"') + '&sort=new';
+  const UNIS = [
+    ['BU', sub('BostonU')], ['Northeastern', sub('NEU')], ['Harvard', sub('Harvard')], ['MIT', sub('mit')],
+    ['BC', sub('BostonCollege')], ['Tufts', sub('Tufts')], ['Emerson', sub('EmersonCollege')], ['Berklee', sub('Berklee')],
+    ['Brandeis', sub('brandeis')], ['UMass Boston', find('UMass Boston')], ['Suffolk', find('Suffolk University')],
+    ['Simmons', find('Simmons University')], ['Wentworth', find('Wentworth Institute of Technology')], ['MassArt', find('MassArt')],
+    ['Lesley', find('Lesley University')], ['Wellesley', find('Wellesley College')], ['Bentley', find('Bentley University')]
+  ];
+  const CCS = [
+    ['Bunker Hill CC', find('Bunker Hill Community College')], ['Roxbury CC', find('Roxbury Community College')],
+    ['MassBay CC', find('MassBay Community College')], ['Quincy College', find('Quincy College')],
+    ['North Shore CC', find('North Shore Community College')], ['Middlesex CC', find('Middlesex Community College')]
+  ];
+
+  function render() {
+    const want = location.hash.slice(1);
+    let i = editions.findIndex(e => e.id === want);
+    if (i < 0) i = 0;
+    const ed = editions[i];
+    const prior = editions[i + 1];
+
+    $('dateline').textContent = ed.date;
+    $('weather').textContent = ed.weather ? 'Weather: ' + ed.weather : '';
+
+    const L = ed.lead;
+    $('lead').innerHTML =
+      `<a href="${esc(L.url)}">
+         <p class="kicker">${esc(L.kicker)}</p>
+         <h2 class="hl">${esc(L.headline)}</h2>
+       </a>
+       <p class="dek">${esc(L.dek)}</p>
+       <a class="thread-link" href="${esc(L.url)}">Find the thread on ${esc(L.subreddit)} <span class="dot" aria-hidden="true">›</span></a>
+`;
+    $('lead-art').href = L.url;
+    $('lead-art').innerHTML = art(L.art);
+
+    $('rail').innerHTML = ed.others.map(o =>
+      `<li><a href="${esc(o.url)}">
+         <p class="kicker">${esc(o.kicker)}</p>
+         <h3 class="hl">${esc(o.headline)}</h3>
+         <p class="meta">${esc(o.subreddit)}</p>
+       </a></li>`).join('');
+
+    const lw = $('lastweek');
+    if (prior) {
+      const W = prior.lead;
+      lw.hidden = false;
+      lw.innerHTML =
+        `<a class="art" href="#${esc(prior.id)}" aria-label="Open the ${esc(prior.label)} edition">${art(W.art)}</a>
+         <div>
+           <p class="label">LAST WEEK'S TOP STORY</p>
+           <a href="${esc(W.url)}"><h2 class="hl">${esc(W.headline)}</h2></a>
+           <p class="meta">${esc(W.subreddit)} · <a href="#${esc(prior.id)}">See the full ${esc(prior.label)} edition ›</a></p>
+         </div>`;
+    } else { lw.hidden = true; lw.innerHTML = ''; }
+
+    const items = (ed.newswire || []).map(n => `<span>${esc(n)}</span>`).join('');
+    $('wire').innerHTML = items + items;
+
+    $('weeks').innerHTML = editions.map((e, k) => [e, k]).reverse().map(([e, k]) =>
+      `<a href="#${esc(e.id)}"${k === i ? ' aria-current="page"' : ''}>${k === 0 ? 'This week · ' : ''}${esc(e.label)}</a>`).join('');
+    const prev = $('prev'), next = $('next');
+    prev.href = editions[i + 1] ? '#' + editions[i + 1].id : '#';
+    prev.setAttribute('aria-disabled', editions[i + 1] ? 'false' : 'true');
+    next.href = i > 0 ? '#' + editions[i - 1].id : '#';
+    next.setAttribute('aria-disabled', i > 0 ? 'false' : 'true');
+
+    // Campus row: rotates each edition (8 schools, always 2 community colleges)
+    const pick = (list, n, seed) => list.map((c, k) => [c, (Math.imul(seed ^ (k + 1) * 2654435761, 2246822519) >>> 0)]).sort((a, b) => a[1] - b[1]).slice(0, n).map(x => x[0]);
+    let seed = 7; for (const ch of ed.id) seed = (Math.imul(seed, 31) + ch.charCodeAt(0)) >>> 0;
+    const shown = pick(UNIS, 6, seed).concat(pick(CCS, 2, seed + 1));
+    $('campus').innerHTML = shown.map(([name, href]) => `<a href="${esc(href)}">${esc(name)}</a>`).join('');
+
+    // Parody ads
+    const ads = ed.ads || [];
+    ['ad1', 'ad2'].forEach((slot, k) => {
+      const a = ads[k], el = $(slot);
+      el.hidden = !a;
+      el.innerHTML = a ? `<p class="ad-label">Paid Parody Advertisement</p>
+        <p class="ad-name">${esc(a.name)}</p>
+        <p class="ad-tag">${esc(a.tagline)}</p>
+        <p class="ad-body">${esc(a.body)}</p>
+        <span class="ad-cta">${esc(a.cta)}</span>` : '';
+    });
+
+    const note = $('note');
+    note.hidden = !ed.preview;
+    note.textContent = 'Preview edition: these stories come from earlier popular r/Boston threads. Live weekly editions will mix r/Boston, nearby city subreddits and Boston college subreddits once Reddit access is switched on.';
+  }
+
+  window.addEventListener('hashchange', () => { render(); window.scrollTo(0, 0); });
+  render();
+})();
+</script>
+</body>
+</html>
